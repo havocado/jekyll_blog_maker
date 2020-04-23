@@ -1,0 +1,881 @@
+---
+layout: post
+current: post
+cover:  assets/images/z-colorquirrel-hsv.png
+navigation: True
+title: (Code) ColorQuirrel
+date: 2020-04-23 08:00:00
+tags: [code]
+class: post-template
+subclass: 'post tag-projects'
+author: ghost
+---
+<p>MATLAB code for project ColorQuirrel. For details and explanation, please read: <a href="/ColorQuirrel">ColorQuirrel</a></p>
+
+<h2>Downloads</h2>
+<br>
+<ul>
+<li><a href="storage/ColorquirrelUI.fig">ColorquirrelUI.fig (Needed for running Colorquirrel)</a></li>
+<li><a href="storage/sample.png">sample.png (Sample PNG image)</a></li>
+</ul>
+
+<h2>ColorQuirrel.m</h2>
+<pre><code class="matlab">% Colorquirrel.m
+% Execute this file to run ColorQuirrel
+
+close ALL;
+
+% Prompt and open input image file
+img_source = input("Enter image path: ");
+obj_image = imread(img_source);
+
+ColorquirrelUI(obj_image);
+</code></pre>
+
+<h2>ColorquirrelUI.m</h2>
+<pre><code class="matlab">% ColorquirrelUI.m
+
+function varargout = ColorquirrelUI(varargin)
+    % Begin initialization code - DO NOT EDIT
+    gui_Singleton = 1;
+    gui_State = struct('gui_Name',       mfilename, ...
+        'gui_Singleton',  gui_Singleton, ...
+        'gui_OpeningFcn', @ColorquirrelUI_OpeningFcn, ...
+        'gui_OutputFcn',  @ColorquirrelUI_OutputFcn, ...
+        'gui_LayoutFcn',  [] , ...
+        'gui_Callback',   []);
+    if nargin && ischar(varargin{1})
+        gui_State.gui_Callback = str2func(varargin{1});
+    end
+
+    if nargout
+        [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+    else
+        gui_mainfcn(gui_State, varargin{:});
+    end
+    % End initialization code - DO NOT EDIT
+end
+
+% --- Executes just before ColorquirrelUI is made visible.
+function ColorquirrelUI_OpeningFcn(hObject, eventdata, handles, varargin)
+    handles.output = hObject;
+
+    % Get image input from input variable.
+    handles.obj_input = varargin{1};
+    handles.obj_main = handles.obj_input;
+    axes(handles.axes_original);
+    imshow(handles.obj_main);
+
+    handles.mode = '';
+    handles.cont_2 = 1;
+    handles.cont_3 = 1;
+    initControlUI(hObject, eventdata, handles);
+    initResultUI(hObject, eventdata, handles);
+
+    guidata(hObject, handles);
+
+    % Update handles structure
+    guidata(hObject, handles);
+end
+
+% --- Outputs from this function are returned to the command line.
+function varargout = ColorquirrelUI_OutputFcn(hObject, eventdata, handles)
+    % varargout  cell array for returning output args (see VARARGOUT);
+    % hObject    handle to figure
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+
+    % Get default command line output from handles structure
+    varargout{1} = handles.output;
+end
+
+% --- Executes on selection change in popupmenu_control_1.
+function popupmenu_control_1_Callback(hObject, eventdata, handles)
+    handles = guidata(hObject);
+
+    initControlUI(hObject, eventdata, handles);
+    contents = cellstr(get(hObject,'String'));
+    handles.mode = contents{get(hObject,'Value')};
+    if (strcmp(handles.mode, 'RGB'))
+        mode_RGB(hObject, eventdata, handles);
+    elseif (strcmp(handles.mode, 'CMY'))
+        mode_CMY(hObject, eventdata, handles);
+    elseif (strcmp(handles.mode, 'CMYK'))
+        mode_CMYK(hObject, eventdata, handles);
+    elseif (strcmp(handles.mode, 'HSV'))
+        mode_HSV(hObject, eventdata, handles);
+    elseif (strcmp(handles.mode, 'HSV'))
+        mode_HSV(hObject, eventdata, handles);
+    elseif (strcmp(handles.mode, 'Colorpicker Basic'))
+        mode_ColorpickerBasic(hObject, eventdata, handles);
+    end
+
+    guidata(hObject, handles);
+    end
+
+    % --- Executes during object creation, after setting all properties.
+    function popupmenu_control_1_CreateFcn(hObject, eventdata, handles)
+
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+
+end
+
+% --- Executes on button press in pushbutton_control_go.
+function pushbutton_control_go_Callback(hObject, eventdata, handles)
+
+    handles = guidata(hObject);
+    initResultUI(hObject, eventdata, handles);
+
+    if (strcmp(handles.mode, 'RGB'))
+        run_RGB(hObject, eventdata, handles);
+    elseif (strcmp(handles.mode, 'CMY'))
+        run_CMY(hObject, eventdata, handles);
+    elseif (strcmp(handles.mode, 'CMYK'))
+        run_CMYK(hObject, eventdata, handles);
+    elseif (strcmp(handles.mode, 'HSV'))
+        run_HSV(hObject, eventdata, handles);
+    elseif (strcmp(handles.mode, 'Colorpicker Basic'))
+        run_ColorpickerBasic(hObject, eventdata, handles);
+    end
+
+    guidata(hObject, handles);
+end
+
+% --- Executes on button press in pushbotton_colorpicker_analysis.
+function pushbotton_colorpicker_analysis_Callback(hObject, eventdata, handles)
+%
+end
+% --- Executes on button press in pushbutton_colorpicker_color.
+function pushbutton_colorpicker_color_Callback(hObject, eventdata, handles)
+%
+end
+
+% --- Executes on selection change in popupmenu_control_2.
+function popupmenu_control_2_Callback(hObject, eventdata, handles)
+
+    handles = guidata(hObject);
+
+    contents = cellstr(get(hObject,'String'));
+    if (strcmp(handles.mode, 'Colorpicker Basic'))
+        handles.cont_2 = str2num(contents{get(hObject,'Value')});
+    end
+
+    guidata(hObject, handles);
+end
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_control_2_CreateFcn(hObject, eventdata, handles)
+
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+
+end
+
+% --- Executes on selection change in popupmenu_control_3.
+function popupmenu_control_3_Callback(hObject, eventdata, handles)
+
+    handles = guidata(hObject);
+    contents = cellstr(get(hObject,'String'));
+    chosen = contents{get(hObject,'Value')};
+    if (strcmp(handles.mode, 'Colorpicker Basic'))
+        if (strcmp(chosen, 'None'))
+            handles.cont_3 = 1;
+        elseif (strcmp(chosen, '2*2'))
+            handles.cont_3 = 2;
+        elseif (strcmp(chosen, '4*4'))
+            handles.cont_3 = 4;
+        elseif (strcmp(chosen, '5*5'))
+            handles.cont_3 = 5;
+        elseif (strcmp(chosen, '7*7'))
+            handles.cont_3 = 7;
+        elseif (strcmp(chosen, '10*10'))
+            handles.cont_3 = 10;
+        elseif (strcmp(chosen, '20*20'))
+            handles.cont_3 = 20;
+        elseif (strcmp(chosen, '100*100'))
+            handles.cont_3 = 100;
+        else
+            handles.cont_3 = 1;
+        end
+    end
+    guidata(hObject, handles);
+end
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_control_3_CreateFcn(hObject, eventdata, handles)
+
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+
+end
+
+% --- Executes on button press in button_result_space_1.
+function button_result_space_1_Callback(hObject, eventdata, handles)
+
+    handles = guidata(hObject);
+    guidata(hObject, handles);
+end
+
+% --- Executes on button press in button_result_space_2.
+function button_result_space_2_Callback(hObject, eventdata, handles)
+
+    handles = guidata(hObject);
+    guidata(hObject, handles);
+end
+
+% --- Executes on button press in button_result_space_3.
+function button_result_space_3_Callback(hObject, eventdata, handles)
+
+    handles = guidata(hObject);
+    guidata(hObject, handles);
+end
+
+% --- Executes on button press in button_result_space_4.
+function button_result_space_4_Callback(hObject, eventdata, handles)
+
+    handles = guidata(hObject);
+    guidata(hObject, handles);
+end
+
+% --- Executes on selection change in saveoption_result_space_1.
+function saveoption_result_space_1_Callback(hObject, eventdata, handles)
+
+    handles = guidata(hObject);
+    guidata(hObject, handles);
+end
+
+% --- Executes during object creation, after setting all properties.
+function saveoption_result_space_1_CreateFcn(hObject, eventdata, handles)
+
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+
+end
+
+% --- Executes on selection change in saveoption_result_space_2.
+function saveoption_result_space_2_Callback(hObject, eventdata, handles)
+
+    handles = guidata(hObject);
+    guidata(hObject, handles);
+end
+
+% --- Executes during object creation, after setting all properties.
+function saveoption_result_space_2_CreateFcn(hObject, eventdata, handles)
+
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+
+end
+
+% --- Executes on selection change in saveoption_result_space_3.
+function saveoption_result_space_3_Callback(hObject, eventdata, handles)
+
+    handles = guidata(hObject);
+    guidata(hObject, handles);
+end
+
+% --- Executes during object creation, after setting all properties.
+function saveoption_result_space_3_CreateFcn(hObject, eventdata, handles)
+
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+
+end
+
+% --- Executes on selection change in saveoption_result_space_4.
+function saveoption_result_space_4_Callback(hObject, eventdata, handles)
+
+    handles = guidata(hObject);
+    guidata(hObject, handles);
+end
+
+% --- Executes during object creation, after setting all properties.
+function saveoption_result_space_4_CreateFcn(hObject, eventdata, handles)
+
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+
+end
+
+
+% =============================================================
+
+function initControlUI(hObject, eventdata, handles)
+    %control texts
+    set(handles.text_control_2, 'Visible', 'off');
+    set(handles.text_control_3, 'Visible', 'off');
+    %control popupmenus
+    set(handles.popupmenu_control_2, 'Visible', 'off');
+    set(handles.popupmenu_control_3, 'Visible', 'off');
+
+    %control button and description
+    set(handles.pushbutton_control_go, 'Visible', 'off');
+    set(handles.control_description, 'Visible', 'off');
+
+end
+function initResultUI(hObject, eventdata, handles)
+
+    %colorpicker
+    set(handles.text_result_colorpicker_1, 'Visible', 'off');
+    set(handles.text_result_colorpicker_2, 'Visible', 'off');
+    %savebuttons for colorpicker
+    set(handles.pushbotton_colorpicker_analysis, 'Visible', 'off');
+    set(handles.pushbutton_colorpicker_color, 'Visible', 'off');
+    %colorpicker results
+    set(handles.axes_result_colorpicker_color, 'Visible', 'off');
+    cla(handles.axes_result_colorpicker_color);
+    set(handles.axes_result_colorpicker_analysis, 'Visible', 'off');
+    cla(handles.axes_result_colorpicker_analysis);
+
+    %color space
+    set(handles.text_result_space_1, 'Visible', 'off');
+    set(handles.axes_result_space_1, 'Visible', 'off');
+    set(handles.saveoption_result_space_1, 'Visible', 'off');
+    set(handles.button_result_space_1, 'Visible', 'off');
+    cla(handles.axes_result_space_1);
+
+    set(handles.text_result_space_2, 'Visible', 'off');
+    set(handles.axes_result_space_2, 'Visible', 'off');
+    set(handles.saveoption_result_space_2, 'Visible', 'off');
+    set(handles.button_result_space_2, 'Visible', 'off');
+    cla(handles.axes_result_space_2);
+
+    set(handles.text_result_space_3, 'Visible', 'off');
+    set(handles.axes_result_space_3, 'Visible', 'off');
+    set(handles.saveoption_result_space_3, 'Visible', 'off');
+    set(handles.button_result_space_3, 'Visible', 'off');
+    cla(handles.axes_result_space_3);
+
+    set(handles.text_result_space_4, 'Visible', 'off');
+    set(handles.axes_result_space_4, 'Visible', 'off');
+    set(handles.saveoption_result_space_4, 'Visible', 'off');
+    set(handles.button_result_space_4, 'Visible', 'off');
+    cla(handles.axes_result_space_4);
+
+end
+function mode_RGB(hObject, eventdata, handles)
+    handles.control_description.String = 'RGB color model is an additive color model that uses Red, Green, Blue to produce visible colors. Press [Go] to continue.';
+    set(handles.control_description, 'Visible', 'on');
+    set(handles.pushbutton_control_go, 'Visible', 'on');
+end
+function mode_CMY(hObject, eventdata, handles)
+    handles.control_description.String = 'CMY color model is a subtractive color model that uses Cyan, Magenta, Yellow to produce visible colors. Press [Go] to continue.';
+    set(handles.control_description, 'Visible', 'on');
+    set(handles.pushbutton_control_go, 'Visible', 'on');
+end
+function mode_CMYK(hObject, eventdata, handles)
+    handles.control_description.String = 'CMYK color model is an extension of CMY color model, with black added. It is used on usual printers, for economic reasons - black inks are usually cheaper than other colored inks. Press [Go] to continue.';
+    set(handles.control_description, 'Visible', 'on');
+    set(handles.pushbutton_control_go, 'Visible', 'on');
+end
+function mode_HSV(hObject, eventdata, handles)
+    handles.control_description.String = 'HSV color model is a color model consisting of Hue, Saturation, and Value.';
+    set(handles.control_description, 'Visible', 'on');
+    set(handles.pushbutton_control_go, 'Visible', 'on');
+end
+function mode_ColorpickerBasic(hObject, eventdata, handles)
+
+    handles.control_description.String = 'Choosing the [representative] colors from the image. K-means clustering is used. [Downsampling] option is inspired by the JPEG compression. Higher downsampling gives up a bit of accuracy for performance.';
+    set(handles.control_description, 'Visible', 'on');
+
+    handles.text_control_2.String = '2. Number of colors to pick:';
+    set(handles.text_control_2, 'Visible', 'on');
+    handles.text_control_3.String = '3. Downsampling coefficient: ';
+    set(handles.text_control_3, 'Visible', 'on');
+
+    handles.popupmenu_control_2.String = {'1', '2', '3', '4', '5', '6', ...
+    '7', '8', '9', '10', '12', '15', '18', '20', '30', '40', '50'};
+    set(handles.popupmenu_control_2, 'Visible', 'on');
+    handles.popupmenu_control_3.String = {'None', '2*2', '4*4', '5*5', ...
+    '7*7', '10*10', '20*20', '100*100'};
+    set(handles.popupmenu_control_3, 'Visible', 'on');
+
+    set(handles.pushbutton_control_go, 'Visible', 'on');
+
+end
+
+function run_RGB(hObject, eventdata, handles)
+    obj_image = handles.obj_main;
+    [r, g, b] = divideSpace3(obj_image);
+    %color space
+    handles.text_result_space_1.String = "Red";
+    set(handles.text_result_space_1, 'Visible', 'on');
+    set(handles.axes_result_space_1, 'Visible', 'on');
+    %%%%%set(handles.button_result_space_1, 'Visible', 'on');
+    axes(handles.axes_result_space_1);
+    imshow(uint8(r));
+
+    handles.text_result_space_2.String = "Green";
+    set(handles.text_result_space_2, 'Visible', 'on');
+    set(handles.axes_result_space_2, 'Visible', 'on');
+    %%%%%set(handles.button_result_space_2, 'Visible', 'on');
+    axes(handles.axes_result_space_2);
+    imshow(uint8(g));
+
+    handles.text_result_space_3.String = "Blue";
+    set(handles.text_result_space_3, 'Visible', 'on');
+    set(handles.axes_result_space_3, 'Visible', 'on');
+    %%%set(handles.button_result_space_3, 'Visible', 'on');
+    axes(handles.axes_result_space_3);
+    imshow(uint8(b));
+
+end
+function run_CMY(hObject, eventdata, handles)
+    obj_ima = handles.obj_main;
+    cmy_ima = convertRGB2CMY(obj_ima);
+    [c, mag, yel] = divideSpace3(cmy_ima);
+
+    c = convertCMY2RGB(c);
+    mag = convertCMY2RGB(mag);
+    yel = convertCMY2RGB(yel);
+
+    %color space
+    handles.text_result_space_1.String = "Cyan";
+    set(handles.text_result_space_1, 'Visible', 'on');
+    set(handles.axes_result_space_1, 'Visible', 'on');
+    %%%%%set(handles.button_result_space_1, 'Visible', 'on');
+    axes(handles.axes_result_space_1);
+    %imshow(CMY2RGB(cmy_ima));
+    imshow(uint8(c));
+
+    handles.text_result_space_2.String = "Magenta";
+    set(handles.text_result_space_2, 'Visible', 'on');
+    set(handles.axes_result_space_2, 'Visible', 'on');
+    %%%set(handles.button_result_space_2, 'Visible', 'on');
+    axes(handles.axes_result_space_2);
+    imshow(uint8(mag));
+
+    handles.text_result_space_3.String = "Yellow";
+    set(handles.text_result_space_3, 'Visible', 'on');
+    set(handles.axes_result_space_3, 'Visible', 'on');
+    %%%set(handles.button_result_space_3, 'Visible', 'on');
+    axes(handles.axes_result_space_3);
+    imshow(uint8(yel));
+
+end
+function run_CMYK(hObject, eventdata, handles)
+    obj_ima = handles.obj_main;
+    cmy_ima = convertRGB2CMY(obj_ima);
+    cmyk_ima = convertCMY2CMYK(cmy_ima);
+    [c, m, y, k] = divideSpace4(cmyk_ima);
+    size(c)
+    c = convertCMY2RGB(c);
+    m = convertCMY2RGB(m);
+    y = convertCMY2RGB(y);
+    k = convertCMY2RGB(k);
+
+    %color space
+    handles.text_result_space_1.String = "Cyan";
+    set(handles.text_result_space_1, 'Visible', 'on');
+    set(handles.axes_result_space_1, 'Visible', 'on');
+    %%%%set(handles.button_result_space_1, 'Visible', 'on');
+    axes(handles.axes_result_space_1);
+    %imshow(CMY2RGB(cmy_ima));
+    imshow(uint8(c));
+
+    handles.text_result_space_2.String = "Magenta";
+    set(handles.text_result_space_2, 'Visible', 'on');
+    set(handles.axes_result_space_2, 'Visible', 'on');
+    %%set(handles.button_result_space_2, 'Visible', 'on');
+    axes(handles.axes_result_space_2);
+    imshow(uint8(m));
+
+    handles.text_result_space_3.String = "Yellow";
+    set(handles.text_result_space_3, 'Visible', 'on');
+    set(handles.axes_result_space_3, 'Visible', 'on');
+    %%set(handles.button_result_space_3, 'Visible', 'on');
+    axes(handles.axes_result_space_3);
+    imshow(uint8(y));
+
+    handles.text_result_space_4.String = "Black";
+    set(handles.text_result_space_4, 'Visible', 'on');
+    set(handles.axes_result_space_4, 'Visible', 'on');
+    set(handles.button_result_space_4, 'Visible', 'on');
+    axes(handles.axes_result_space_4);
+    imshow(uint8(k));
+
+end
+function run_HSV(hObject, eventdata, handles)
+    obj_ima = handles.obj_main;
+    hsv_ima = convertRGB2HSV(obj_ima);
+
+    % Trick to displaying HSV images.
+    % H: set every s and v to 0 and 1.
+    % S, V: map [0, 1] to [0, 255], and put it in cmyk format as all black.
+    [height, width, n] = size(hsv_ima);
+    h_trick = zeros(height, width, 3); % HSV format
+    s_trick = zeros(height, width, 4); % CMYK format
+    v_trick = zeros(height, width, 4); % CMYK format
+
+    for r = 1:height
+        for c = 1:width
+            h_trick(r, c, 1) = hsv_ima(r, c, 1);
+            h_trick(r, c, 2) = 0.5;
+            h_trick(r, c, 3) = 1;
+
+            s_trick(r, c, 4) = hsv_ima(r, c, 2)*255;
+            v_trick(r, c, 4) = hsv_ima(r, c, 3)*255;
+        end
+    end
+
+    h = convertHSV2RGB(h_trick);
+    s_temp = convertCMYK2CMY(s_trick);
+    s = convertCMY2RGB(s_temp);
+    v_temp = convertCMYK2CMY(v_trick);
+    v = convertCMY2RGB(v_temp);
+
+    %color space
+    handles.text_result_space_1.String = "Hue";
+    set(handles.text_result_space_1, 'Visible', 'on');
+    set(handles.axes_result_space_1, 'Visible', 'on');
+    %%%%set(handles.button_result_space_1, 'Visible', 'on');
+    axes(handles.axes_result_space_1);
+    %imshow(CMY2RGB(cmy_ima));
+    imshow(uint8(h));
+
+    handles.text_result_space_2.String = "Saturation";
+    set(handles.text_result_space_2, 'Visible', 'on');
+    set(handles.axes_result_space_2, 'Visible', 'on');
+    %%set(handles.button_result_space_2, 'Visible', 'on');
+    axes(handles.axes_result_space_2);
+    imshow(uint8(s));
+
+    handles.text_result_space_3.String = "Value";
+    set(handles.text_result_space_3, 'Visible', 'on');
+    set(handles.axes_result_space_3, 'Visible', 'on');
+    %%set(handles.button_result_space_3, 'Visible', 'on');
+    axes(handles.axes_result_space_3);
+    imshow(uint8(v));
+
+end
+
+function run_Colorpicker1(hObject, eventdata, handles)
+    sample_obj = downsample(handles.obj_input, handles.cont_3);
+
+    %colorpicker
+    set(handles.text_result_colorpicker_1, 'Visible', 'on');
+    set(handles.text_result_colorpicker_2, 'Visible', 'on');
+    %savebuttons for colorpicker
+    set(handles.pushbotton_colorpicker_analysis, 'Visible', 'on');
+    set(handles.pushbutton_colorpicker_color, 'Visible', 'on');
+    %colorpicker results
+    set(handles.axes_result_colorpicker_color, 'Visible', 'on');
+    set(handles.axes_result_colorpicker_analysis, 'Visible', 'on');
+
+    obj_image = handles.obj_main;
+    [height, width, n] = size(obj_image);
+
+    %constructing color bins......
+    colorBin = zeros(256, 256, 256);
+    for r = 1:height
+        for c = 1:width
+            colorBin(obj_image(r, c, 1)+1, obj_image(r, c, 2)+1, obj_image(r, c, 3)+1) ...
+            = colorBin(obj_image(r, c, 1)+1, obj_image(r, c, 2)+1, obj_image(r, c, 3)+1)+1;
+        end
+    end
+
+    [maxVal, color] = max(colorBin, [], 3, 'linear');
+    pal = zeros(handles.cont_2, 3);
+    for i = 1:handles.cont_2
+        pal(i, 1) = floor(color(i)/(256*3));
+        pal(i, 2) = floor((color(i)-(pal(i, 1)*256*3))/3);
+        pal(i, 3) = mod(color(i), 3)+1;
+    end
+    size(maxVal)
+    size(color)
+    size(pal)
+
+    axes(handles.axes_result_colorpicker_color);
+    imshow(pal);
+    %rgbScatterPlot(sample_obj, centers, handles.axes_result_colorpicker_analysis);
+
+end
+function run_ColorpickerBasic(hObject, eventdata, handles)
+    sample_obj = downsample(handles.obj_input, handles.cont_3);
+
+    %colorpicker
+    set(handles.text_result_colorpicker_1, 'Visible', 'on');
+    set(handles.text_result_colorpicker_2, 'Visible', 'on');
+    %savebuttons for colorpicker
+    %set(handles.pushbotton_colorpicker_analysis, 'Visible', 'on');
+    %set(handles.pushbutton_colorpicker_color, 'Visible', 'on');
+    %colorpicker results
+    set(handles.axes_result_colorpicker_color, 'Visible', 'on');
+    set(handles.axes_result_colorpicker_analysis, 'Visible', 'on');
+
+
+    [pal, centers, centered_image] = makePalette(sample_obj, handles.cont_2);
+    axes(handles.axes_result_colorpicker_color);
+    imshow(pal);
+    rgbScatterPlot(sample_obj, centers, handles.axes_result_colorpicker_analysis);
+
+end
+
+
+function [palette, centers, centered_image] = makePalette(obj_image, k)
+    [centered_image, centers] = imsegkmeans(uint8(obj_image),k);
+
+
+    %B = labeloverlay(obj_image, centered_image, 'Colormap', double(centers/256));
+    %imshow(B);
+    palette = zeros(k, 1, 3);
+    for i=1:k
+        palette(i, 1, 1) = centers(i, 1);
+        palette(i, 1, 2) = centers(i, 2);
+        palette(i, 1, 3) = centers(i, 3);
+    end
+    palette = uint8(palette);
+end
+
+function hsv = convertRGB2HSV(rgb)
+    %https://cs.stackexchange.com/questions/64549/convert-hsv-to-rgb-colors
+    % H [0,360]. S [0,1]. V [0,1].
+    [height, width, n] = size(rgb);
+    hsv = zeros(height, width, n);
+    for r = 1:height
+        for c = 1:width
+            % max = max(R, G, B). min = min(R, G, B).
+            max = 'R';
+            max_val = rgb(r, c, 1);
+            min = 'R';
+            min_val = rgb(r, c, 1);
+            if (rgb(r, c, 2) > max_val)
+                max = 'G';
+                max_val = rgb(r, c, 2);
+            elseif (rgb(r, c, 2) < min_val)
+                min = 'G';
+                min_val = rgb(r, c, 2);
+            end
+            if (rgb(r, c, 3) > max_val)
+                max = 'B';
+                max_val = rgb(r, c, 3);
+            elseif (rgb(r, c, 3) < min_val)
+                min = 'B';
+                min_val = rgb(r, c, 3);
+            end
+
+            max_val = double(max_val)/255;
+            min_val = double(min_val)/255;
+
+            hsv(r, c, 3) = max_val;
+            if (max_val == 0)
+                hsv(r, c, 2) = 0;
+            else
+                hsv(r, c, 2) = (double(max_val)-double(min_val))/double(max_val);
+            end
+
+            r_var = double(rgb(r, c, 1))/255;
+            g_var = double(rgb(r, c, 2))/255;
+            b_var = double(rgb(r, c, 3))/255;
+
+            if (max == 'R')
+                hsv(r, c, 1) = 60*(0 + (g_var-b_var)/(max_val-min_val));
+            elseif (max == 'G')
+                hsv(r, c, 1) = 60*(2 + (b_var-r_var)/(max_val-min_val));
+            else
+                hsv(r, c, 1) = 60*(4 + (r_var-g_var)/(max_val-min_val));
+            end
+            if (hsv(r, c, 1) < 0)
+                hsv(r, c, 1) = hsv(r, c, 1) + 360;
+            end
+
+        end
+    end
+
+end
+
+function rgb = convertHSV2RGB(hsv)
+    %https://www.rapidtables.com/convert/color/hsv-to-rgb.html
+    [height, width, n] = size(hsv);
+    rgb = zeros(height, width, n);
+    hsv = double(hsv);
+    for r = 1:height
+        for c = 1:width
+            c_par = hsv(r, c, 2) * hsv(r, c, 3); % C=V*S
+            x_par = c_par*((1 - abs(mod(floor(hsv(r, c, 1)/60), 2)-1))); % X=C*(1-|(H/60)mod2-1|)
+            m_par = hsv(r, c, 3)-c_par; % m = V-C
+            if (hsv(r, c, 1) < 60)
+                R_prime = c_par;
+                G_prime = x_par;
+                B_prime = 0;
+            elseif (hsv(r, c, 1) < 120)
+                R_prime = x_par;
+                G_prime = c_par;
+                B_prime = 0;
+            elseif (hsv(r, c, 1) < 180)
+                R_prime = 0;
+                G_prime = c_par;
+                B_prime = x_par;
+            elseif (hsv(r, c, 1) < 240)
+                R_prime = 0;
+                G_prime = x_par;
+                B_prime = c_par;
+            elseif (hsv(r, c, 1) < 300)
+                R_prime = x_par;
+                G_prime = 0;
+                B_prime = c_par;
+            else
+                R_prime = c_par;
+                G_prime = 0;
+                B_prime = x_par;
+            end
+
+            rgb(r, c, 1) = (R_prime+m_par)*255;
+            rgb(r, c, 2) = (G_prime+m_par)*255;
+            rgb(r, c, 3) = (B_prime+m_par)*255;
+
+        end
+    end
+
+
+end
+
+function [A, B, C] = divideSpace3(abc)
+    [height, width, n] = size(abc);
+
+    A = zeros(height, width, n);
+    B = zeros(height, width, n);
+    C = zeros(height, width, n);
+
+    for r = 1:height
+        for c = 1:width
+            A(r, c, 1) = abc(r, c, 1);
+            B(r, c, 2) = abc(r, c, 2);
+            C(r, c, 3) = abc(r, c, 3);
+        end
+    end
+
+end
+
+function [A, B, C, D] = divideSpace4(abcd)
+    [height, width, n] = size(abcd);
+    n = 3;
+    A = uint8(zeros(height, width, n));
+    B = uint8(zeros(height, width, n));
+    C = uint8(zeros(height, width, n));
+    D = uint8(zeros(height, width, n));
+
+    for r = 1:height
+        for c = 1:width
+            A(r, c, 1) = abcd(r, c, 1);
+            B(r, c, 2) = abcd(r, c, 2);
+            C(r, c, 3) = abcd(r, c, 3);
+            D(r, c, 1) = abcd(r, c, 4)/3;
+            D(r, c, 2) = abcd(r, c, 4)/3;
+            D(r, c, 3) = abcd(r, c, 4)/3;
+        end
+    end
+
+end
+
+
+function cmy = convertRGB2CMY(rgb)
+    %returns height*width*3 size matrix, each Cyan, Magenta and Yellow.
+    [height, width, n] = size(rgb);
+    cmy = zeros(height, width, n);
+    for r = 1:height
+        for c = 1:width
+            cmy(r, c, 1) = 255 - rgb(r, c, 1);
+            cmy(r, c, 2) = 255 - rgb(r, c, 2);
+            cmy(r, c, 3) = 255 - rgb(r, c, 3);
+        end
+    end
+end
+
+function rgb = convertCMY2RGB(cmy)
+    %returns height*width*3 size matrix, each Cyan, Magenta and Yellow.
+    [height, width, n] = size(cmy);
+    rgb = zeros(height, width, n);
+    for r = 1:height
+        for c = 1:width
+            %RGB8 = uint8(round(RGB64*255));
+            rgb(r, c, 1) = 255 - cmy(r, c, 1);
+            rgb(r, c, 2) = 255 - cmy(r, c, 2);
+            rgb(r, c, 3) = 255 - cmy(r, c, 3);
+        end
+    end
+end
+
+function cmyk = convertCMY2CMYK(cmy)
+    [height, width, n] = size(cmy);
+    cmyk = zeros(height, width, 4);
+    for r = 1:height
+        for c = 1:width
+            %cmyk(r, c, 4) = min([cmy(r, c, 1), cmy(r, c, 2), cmy(r, c, 3)])
+            cmyk(r, c, 4) = cmy(r, c, 1);
+            if (cmy(r, c, 2) < cmyk(r, c, 4))
+                cmyk(r, c, 4) = cmy(r, c, 2);
+            end
+            if (cmy(r, c, 3) < cmyk(r, c, 4))
+                cmyk(r, c, 4) = cmy(r, c, 3);
+            end
+            cmyk(r, c, 1) = cmy(r, c, 1) - cmyk(r, c, 4);
+            cmyk(r, c, 2) = cmy(r, c, 2) - cmyk(r, c, 4);
+            cmyk(r, c, 3) = cmy(r, c, 2) - cmyk(r, c, 4);
+        end
+    end
+end
+function cmy = convertCMYK2CMY(cmyk)
+    [height, width, n] = size(cmyk);
+    cmy = zeros(height, width, 3);
+    for r = 1:height
+        for c = 1:width
+            cmy(r, c, 1) = cmyk(r, c, 1) + cmyk(r, c, 4);
+            cmy(r, c, 2) = cmyk(r, c, 2) + cmyk(r, c, 4);
+            cmy(r, c, 3) = cmyk(r, c, 2) + cmyk(r, c, 4);
+        end
+    end
+end
+function rgbScatterPlot(obj_image, centers, place)
+    set(place, 'Units', 'Normalized');
+    axes(place);
+    %let's plot the colors yay!
+    [height, width, n] = size(obj_image);
+    colors = zeros(256, 256, 256);
+    for r = 1:height
+        for c = 1:width
+            colors(obj_image(r, c, 1)+1, obj_image(r, c, 2)+1, obj_image(r, c, 3)+1) = ...
+            colors(obj_image(r, c, 1)+1, obj_image(r, c, 2)+1, obj_image(r, c, 3)+1) + 1;
+        end
+    end
+    [a, b, c] = ind2sub(size(colors), find(colors));
+    scatter3(a, b, c, '.y');
+    hold on;
+    [a, b, c] = ind2sub(size(colors), find(floor(colors/10)));
+    scatter3(a, b, c, '.g');
+    hold on;
+    [a, b, c] = ind2sub(size(colors), find(floor(colors/100)));
+    scatter3(a, b, c, '.b');
+    hold on;
+    scatter3(centers(:, 1), centers(:, 2), centers(:, 3), 'or');
+
+    xlabel("Red");
+    ylabel("Green");
+    zlabel("Blue");
+end
+
+function smaller = downsample(original, k)
+
+    [height, width, n_] = size(original);
+    smaller = zeros(floor(height/k), floor(width/k), 3);
+    for i = 1:floor(height/k)-1
+        for j = 1:floor(width/k)-1
+            for n = 1:3
+                smaller(i, j, n) = uint8(original(i*k+floor(k/2), j*k+floor(k/2), n));
+            end
+
+        end
+    end
+end
+
+% ===============================================================
+
+</code></pre>

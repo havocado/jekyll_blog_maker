@@ -26,4 +26,8 @@ projects:
   name: projects
   description: False
   cover: False
+code:
+  name: code
+  description: False
+  cover: False
 # TODO. Fix this page for content!
