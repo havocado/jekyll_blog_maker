@@ -8,7 +8,8 @@ https://codeforces.com/contest/1336/problem/A
 #include <algorithm>
 using namespace std;
 
-void set_children_DFS(const int& current, vector<int>& depths, vector<int>& parents, vector<int>& num_children, const vector<vector<int>>& connected) {
+void set_children_DFS(const int& current, vector<int>& depths, vector<int>& parents,
+    vector<int>& num_children, const vector<vector<int>>& connected) {
     for (int i = 0; i < connected[current].size(); i++) {
         if (connected[current][i] == parents[current]) {
             continue;
@@ -21,7 +22,8 @@ void set_children_DFS(const int& current, vector<int>& depths, vector<int>& pare
     }
 }
 
-long long get_happiness(const int& node, const vector<int>& depths, const vector<int>& parents, const vector<bool>& is_tourism) {
+long long get_happiness(const int& node, const vector<int>& depths,
+    const vector<int>& parents, const vector<bool>& is_tourism) {
     if (is_tourism[node]) {
         return depths[node]+1;
     }

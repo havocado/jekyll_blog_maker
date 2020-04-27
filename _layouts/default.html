@@ -13,13 +13,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Styles'n'Scripts -->
 <!--    Original-->
-<!--    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}assets/built/screen.css" />-->
-<!--    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}assets/built/screen.edited.css" />-->
-<!--    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}assets/built/syntax.css" />-->
+    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}assets/built/screen.css" />
+    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}assets/built/screen.edited.css" />
+    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}assets/built/syntax.css" />
 <!--    Fixed links 2020.04.27.-->
-    <link rel="stylesheet" type="text/css" href="assets/built/screen.css" />
-    <link rel="stylesheet" type="text/css" href="assets/built/screen.edited.css" />
-    <link rel="stylesheet" type="text/css" href="assets/built/syntax.css" />
+<!--    <link rel="stylesheet" type="text/css" href="assets/built/screen.css" />-->
+<!--    <link rel="stylesheet" type="text/css" href="assets/built/screen.edited.css" />-->
+<!--    <link rel="stylesheet" type="text/css" href="assets/built/syntax.css" />-->
     <!-- highlight.js -->
 <!--    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">-->
 <!--    <style>.hljs { background: none; }</style>-->
@@ -100,8 +100,8 @@
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
             crossorigin="anonymous">
     </script>
-    <!--    <script type="text/javascript" src="{{ site.baseurl }}assets/js/jquery.fitvids.js"></script>-->
-    <script type="text/javascript" src="assets/js/jquery.fitvids.js"></script>
+        <script type="text/javascript" src="{{ site.baseurl }}assets/js/jquery.fitvids.js"></script>
+<!--    <script type="text/javascript" src="assets/js/jquery.fitvids.js"></script>-->
     <!--    Below link is not working for some reason-->
     <!--    <script type="text/javascript" src="https://demo.ghost.io/assets/js/jquery.fitvids.js?v=724281a32e"></script>-->
 
@@ -117,7 +117,7 @@
     <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.0.1/build/highlight.min.js"></script>
     <script>$(document).ready(function() {
       $('pre code').each(function(i, block) {
-        hljs.highlightBlock(block);
+        // hljs.highlightBlock(block);  // Temporarily diabled
       });
     });</script>
 <!--    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/default.min.css">-->
@@ -139,8 +139,8 @@
     <script>
         var maxPages = parseInt('{{ paginator.total_pages }}');
     </script>
-<!--    <script src="{{ site.baseurl }}assets/js/infinitescroll.js"></script>-->
-    <script src="assets/js/infinitescroll.js"></script>
+    <script src="{{ site.baseurl }}assets/js/infinitescroll.js"></script>
+<!--    <script src="assets/js/infinitescroll.js"></script>-->
     {% endif %}
 
 
