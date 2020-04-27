@@ -1,0 +1,57 @@
+---
+layout: post
+current: post
+cover:  assets/images/welcome.jpg
+navigation: True
+title: C++ April 2020
+date: 2020-04-26 14:18:00
+tags: [code]
+class: post-template
+subclass: 'post tag-code'
+author: hailey
+---
+
+
+
+<div class="post-feed">
+
+    <h3>Codeforces 1334C - Circle of Monsters</h3>
+
+
+
+
+
+
+</div>
+
+<!--Scripts for showing and hiding codes-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/prism.min.js"></script>
+<script>
+  // openCodeFile("storage/0417_1334C.cpp");
+  function openCodeFile(file, parentInDocument) {
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function () {
+      if(rawFile.readyState === 4) {
+        if(rawFile.status === 200 || rawFile.status == 0) {
+          var allText = rawFile.responseText;
+          allText = Prism.highlight(allText, Prism.languages.clike, 'clike');
+          // allText = String(allText).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+          parentInDocument.innerHTML = allText;
+        }
+      }
+    };
+    rawFile.send(null);
+  }</script>
+
+<script>
+    function showCode(src, parent_container) {
+      var pre_elem = document.createElement("pre");
+      var code_elem = document.createElement("code");
+      pre_elem.appendChild(code_elem);
+      openCodeFile("storage/0417_1334C.cpp", code_elem);
+      parent_container.appendChild(pre_elem);
+    }
+
+
+</script>

@@ -15,6 +15,9 @@ var cssnano = require('cssnano');
 var customProperties = require('postcss-custom-properties');
 var easyimport = require('postcss-easy-import');
 
+// // Added 2020.04.27. highlight.js
+// var hljs = require('./highlight.js');
+
 var swallowError = function swallowError(error) {
     gutil.log(error.toString());
     gutil.beep();

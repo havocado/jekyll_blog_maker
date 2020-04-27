@@ -75,8 +75,8 @@ repo: havocado
 branch: master
 relative_source: ../
 destination: ../hailey-blog/
-production_url:  https://havocado.github.io/
-source_url:  https://github.com/havocado/jekyll-blog-maker/
+#production_url:  https://havocado.github.io/
+#source_url:  https://github.com/havocado/jekyll-blog-maker/
 
 exclude:
   - assets/css

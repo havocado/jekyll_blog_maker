@@ -10,6 +10,11 @@ class: post-template
 subclass: 'post tag-projects'
 author: hailey
 ---
+<!--Using hightlight.js-->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/default.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
 <p>MATLAB code for project ColorQuirrel. For details and explanation, please read: <a href="/ColorQuirrel">ColorQuirrel</a></p>
 
 <h2>Downloads</h2>
@@ -33,7 +38,7 @@ ColorquirrelUI(obj_image);
 </code></pre>
 
 <h2>ColorquirrelUI.m</h2>
-<pre><code class="matlab">% ColorquirrelUI.m
+<pre><code class="Matlab">% ColorquirrelUI.m
 
 function varargout = ColorquirrelUI(varargin)
     % Begin initialization code - DO NOT EDIT
