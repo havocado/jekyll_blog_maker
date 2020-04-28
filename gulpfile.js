@@ -71,3 +71,17 @@ gulp.task('zip', ['css'], function() {
 gulp.task('default', ['build'], function () {
     gulp.start('watch');
 });
+
+// Highlight.js, added 2020.04.28.
+gulp.task('process-highlightjs-script', function(callback) {
+    let command = 'cd bower_components/highlight.js.origin'
+      + ' && npm install'
+      + ' && node tools/build :common';
+    exec(command, (err, stdout, stderr)=> {
+        console.log(stderr);
+        console.log(stdout);
+
+        callback(err);
+    });
+
+});
