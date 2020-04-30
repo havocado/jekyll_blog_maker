@@ -9,6 +9,7 @@ layout: null
     <link>
     {{ site.url }}</link>
     {% for post in site.posts %}
+
       {% unless post.link %}
       <item>
         <title>{{ post.title | xml_escape }}</title>
