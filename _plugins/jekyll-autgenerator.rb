@@ -13,6 +13,7 @@ module Jekyll
 
     def build_subpages(site, type, posts)
       posts[1] = posts[1].sort_by { |p| -p.date.to_f }
+      #posts[1] = posts[1].sort_by { |p| -p.data['page_priority'] }
       atomize(site, type, posts)
       paginate(site, type, posts)
     end
