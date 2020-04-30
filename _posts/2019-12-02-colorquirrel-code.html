@@ -9,12 +9,8 @@ tags: [code]
 class: post-template
 subclass: 'post tag-projects'
 author: hailey
-page_priority: 1
+page_priority: 5
 ---
-<!--Using hightlight.js-->
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/default.min.css">
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
 
 <p>MATLAB code for project ColorQuirrel. For details and explanation, please read: <a href="/ColorQuirrel">ColorQuirrel</a></p>
 
@@ -26,7 +22,7 @@ page_priority: 1
 </ul>
 
 <h2>ColorQuirrel.m</h2>
-<pre><code class="matlab">% Colorquirrel.m
+<pre><code class="">% Colorquirrel.m
 % Execute this file to run ColorQuirrel
 
 close ALL;
@@ -39,7 +35,7 @@ ColorquirrelUI(obj_image);
 </code></pre>
 
 <h2>ColorquirrelUI.m</h2>
-<pre><code class="Matlab">% ColorquirrelUI.m
+<pre><code class="">% ColorquirrelUI.m
 
 function varargout = ColorquirrelUI(varargin)
     % Begin initialization code - DO NOT EDIT
@@ -885,3 +881,13 @@ end
 % ===============================================================
 
 </code></pre>
+
+
+<!--&lt;!&ndash;Prism CDN for code highlighting&ndash;&gt;-->
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism-okaidia.min.css">-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/prism.min.js"></script>-->
+<!--<script>-->
+<!--  for (var block in document.getElementsByClassName('pre code')) {-->
+<!--    block.innerHTML = Prism.highlight(block.innerHTML, Prism.languages.matlab, 'matlab');-->
+<!--  };-->
+<!--</script>-->
