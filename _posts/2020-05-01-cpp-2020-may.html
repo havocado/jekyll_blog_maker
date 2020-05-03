@@ -1,0 +1,113 @@
+---
+layout: post
+current: post
+cover:  assets/images/cover-cpp.png
+navigation: True
+title: C++ May 2020
+date: 2020-05-01 17:49:00
+tags: [codes]
+class: post-template
+subclass: 'post tag-codes'
+author: hailey
+page_priority: 5
+---
+<p>Problems solved in May, 2020</p>
+
+<div id="code-show"></div>
+
+<script>
+  var contents = [
+    {
+      title: "Google Code Jam 2020 Round 1C - A. Overexcited Fan",
+      date: "May 2, 2020",
+      tags: "google code jam",
+      link: "https://codingcompetitions.withgoogle.com/codejam/round/000000000019fef4/0000000000317409",
+      source: "storage/code-fractions/Cpp/2020_05_May/0502_Code_Jam_Round_1C_A.cpp"
+    },
+    {
+      title: "Codeforces 1348B - Phoenix and Beauty",
+      date: "May 2, 2020",
+      tags: " constructive algorithms,    data structures,    greedy,    sortings",
+      link: "https://codeforces.com/contest/1348/problem/B",
+      source: "storage/code-fractions/Cpp/2020_05_May/0502_1348B.cpp"
+    },
+    {
+      title: "Codeforces 1348A - Phoenix and Balance",
+      date: "May 2, 2020",
+      tags: " greedy,    math,    *800",
+      link: "https://codeforces.com/contest/1348/problem/A",
+      source: "storage/code-fractions/Cpp/2020_05_May/0502_1348A.cpp"
+    }
+
+  ];
+
+</script>
+
+<hr>
+
+
+<!--This is the end of the visible content. Below are codes for showing codes.-->
+<!--========================================================-->
+
+<!--Prism CDN for code highlighting-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism-okaidia.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/prism.min.js"></script>
+<!--Scripts for showing and hiding codes-->
+<script>
+  function openCodeFile(file, parentInDocument) {
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function () {
+      if(rawFile.readyState === 4) {
+        if(rawFile.status === 200 || rawFile.status == 0) {
+          var allText = rawFile.responseText;
+          allText = Prism.highlight(allText, Prism.languages.clike, 'clike');
+          // allText = String(allText).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+          parentInDocument.innerHTML = allText;
+        }
+      }
+    };
+    rawFile.send(null);
+  }</script>
+
+<script>
+  function showCode(src, parent_container) {
+    var pre_elem = document.createElement("pre");
+    var code_elem = document.createElement("code");
+    pre_elem.appendChild(code_elem);
+    openCodeFile(src, code_elem);
+    parent_container.appendChild(pre_elem);
+  }
+</script>
+<script>
+  // Creating content with above
+  var code_show = document.getElementById("code-show");
+  for (var i = 0; i < contents.length; i+=1) {
+    var problem = document.createElement("div");
+    problem.innerHTML = "";
+    // Problems with same dates are shown together with single 'date'.
+    if (i == 0 || contents[i - 1].date !== contents[i].date) {
+      problem.innerHTML += "<p style=\"margin-bottom:0;color:cornflowerblue\">- " + contents[i].date + "</p>";
+    }
+    // Add the title
+    var problem_title = document.createElement("h3");
+    problem_title.innerHTML = contents[i].title;
+    problem.appendChild(problem_title);
+
+    // Add tags
+    var problem_tags = document.createElement("p");
+    problem_tags.innerHTML = "Tags: " + contents[i].tags +
+      "| <a href=\"" + contents[i].link + "\">Problem link</a>";
+    problem.appendChild(problem_tags);
+
+    var problem_code = document.createElement("details");
+    problem_code.setAttribute("style", "width:100%");
+    problem_code.innerHTML = "<summary><strong style=\"color:orange\">Click here</strong> to view code</summary>";
+    problem.appendChild(problem_code);
+
+    showCode(contents[i].source, problem_code);
+
+    problem.innerHTML += "<br>";
+    code_show.appendChild(problem);
+  }
+</script>
