@@ -1,0 +1,83 @@
+---
+layout: post
+current: post
+cover:  assets/images/cover-cpp.png
+navigation: True
+title: C++ January 2020
+date: 2020-04-01 1:23:00
+tags: [codes]
+class: post-template
+subclass: 'post tag-codes'
+author: hailey
+page_priority: 7
+---
+<p>Problems solved in January, 2020</p>
+
+<div id="code-show"></div>
+
+<script>
+  var content_names = [
+    "1288C.cpp"
+  ];
+
+</script>
+
+<hr>
+
+<!--This is the end of the visible content. Below are codes for showing codes.-->
+<!--========================================================-->
+
+<!--Prism CDN for code highlighting-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism-okaidia.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/prism.min.js"></script>
+<!--Scripts for showing and hiding codes-->
+<script>
+  function openCodeFile(file, parentInDocument) {
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function () {
+      if(rawFile.readyState === 4) {
+        if(rawFile.status === 200 || rawFile.status == 0) {
+          var allText = rawFile.responseText;
+          allText = Prism.highlight(allText, Prism.languages.clike, 'clike');
+          // allText = String(allText).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+          parentInDocument.innerHTML = allText;
+        }
+      }
+    };
+    rawFile.send(null);
+  }</script>
+
+<script>
+  function showCode(src, parent_container) {
+    var pre_elem = document.createElement("pre");
+    var code_elem = document.createElement("code");
+    pre_elem.appendChild(code_elem);
+    openCodeFile(src, code_elem);
+    parent_container.appendChild(pre_elem);
+  }
+</script>
+<script>
+  // Creating content with above
+  var code_show = document.getElementById("code-show");
+  for (var i = 0; i < content_names.length; i+=1) {
+    var problem = document.createElement("div");
+    problem.innerHTML = "";
+
+    // Add the title
+    var problem_title = document.createElement("h3");
+    problem_title.innerHTML = content_names[i];
+    problem.appendChild(problem_title);
+
+    var problem_code = document.createElement("details");
+    problem_code.setAttribute("style", "width:100%");
+    problem_code.innerHTML = "<summary><strong style=\"color:orange\">Click here</strong> to view code</summary>";
+    problem.appendChild(problem_code);
+
+    var content_source = "storage/code-fractions/Cpp/2020_01_Jan/" + content_names[i];
+    showCode(content_source, problem_code);
+
+    problem.innerHTML += "<br>";
+    code_show.appendChild(problem);
+  }
+</script>
