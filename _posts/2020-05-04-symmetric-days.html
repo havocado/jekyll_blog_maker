@@ -1,0 +1,64 @@
+---
+layout: post
+current: post
+cover:  assets/images/design.jpg
+navigation: True
+title: Symmetric Days
+date: 2020-05-04 08:00:00
+tags: [codes]
+class: post-template
+subclass: 'post tag-codes'
+author: hailey
+page_priority: 6
+---
+
+
+
+<h1>Symmetric Days</h1>
+<br>
+<h3>Problem</h3>
+<br>
+<p>If you write May 5, 2020 in YYYY/MM/DD form, in 7 segment digit system, it looks like this:</p>
+<img src="assets/images/z-sym-digit.png" alt="2020 05 05 shown in 7 segment digit system" style="width:30%">
+<br>
+<p>If you bring a mirror and place it in the middle, facing either left or right, the number is going to be still same. In other words, the date is symmetric in y-axis!</p>
+<p>Can you find out which dates are symmetric in this way, in the given interval? For convenience, we assume all months have 30 days each. (For example, 2020 February 30 is a valid date.)</p>
+
+<h3>Input</h3>
+<br>
+<p style="margin-bottom:0.7em">The first line of input will be <strong>t</strong> – the number of test cases.</p>
+<p style="margin-bottom:0.7em">The following t test cases consists of two lines, each containing:</p>
+<p style="margin-bottom:0.7em"><strong>y<sub>1</sub>, m<sub>1</sub>, d<sub>1</sub></strong> – the starting date</p>
+<p style="margin-bottom:0.7em"><strong>y<sub>2</sub>, m<sub>2</sub>, d<sub>2</sub></strong>  - the ending date</p>
+<p style="margin-bottom:0.7em">Constraints: 1 &le; <strong>y<sub>j</sub></strong> &le; 9999, 1 &le; <strong>m<sub>j</sub></strong> &le; 12, 1 &le; <strong>d<sub>j</sub></strong> &le; 30 for all  <strong>j</strong> &isin; {1, 2}</p>
+
+<h3>Output</h3>
+<br>
+<p style="margin-bottom:0.7em">For each test case, the first line contains an integer <strong>n</strong> – the number of symmetric dates between the starting date and the ending date inclusive.</p>
+<p style="margin-bottom:0.7em">The following <strong>n</strong> lines contain the symmetric dates, <strong>y<sub>i</sub>, m<sub>i</sub>, d<sub>i</sub></strong> (1 &le; <strong>i</strong> &le; <strong>n</strong>), sorted in increasing order. The leading zeroes should be printed too.</p>
+
+<h3>Note</h3>
+<br>
+<ul>
+    <li>The date is symmetric only if all the segments are preserved after flipping y-axis. For example, 1111 November 11 is <strong>NOT</strong> symmetric.</li>
+</ul>
+
+<h3>Example</h3>
+<br>
+<p style="margin-bottom:0">Input</p>
+<pre><code>3
+2020 05 04
+2020 05 05
+2020 01 01
+2020 01 03
+2050 02 03
+2051 01 07</code></pre>
+
+<p style="margin-bottom:0">Output</p>
+<pre><code>1
+2020 05 05
+0
+1
+2050 02 05</code></pre>
+
+<hr>
