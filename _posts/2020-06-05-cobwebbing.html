@@ -1,0 +1,249 @@
+---
+layout: post
+current: post
+cover:  assets/images/welcome.jpg
+navigation: True
+title: Cobwebbing Analysis for Discrete Logistic Model
+date: 2020-06-05 15:58:00
+tags: [projects]
+class: post-template
+subclass: 'post tag-projects'
+author: hailey
+page_priority: 3
+---
+<h2>Cobwebbing Analysis for Discrete Logistic Model</h2>
+<hr>
+<canvas id="cobweb-canvas" width="700" height="500"></canvas>
+<br>
+
+<div class="slidecontainer" style="width:100%;float:left;text-align:left">
+  <p>Modify <var>r</var></p>
+  <input type="range" min="0" max="4000" value="3300" class="slider" id="r-slider">
+
+  <p>Modify Cobwebbing Update Time</p>
+  <input type="range" min="1" max="4000" value="200" class="slider" id="interval-slider">
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
+<script>
+    let cobweb_canvas = document.getElementById("cobweb-canvas");
+    let cobweb_ctx = cobweb_canvas.getContext("2d");
+    let cobweb_chart = new Chart(cobweb_ctx, {
+      type: 'line',
+      animation: false,
+      data: {
+        datasets: [],
+      },
+      options: {
+        annotation: {
+          drawTime: 'afterDatasetsDraw',
+          annotations: []
+        }
+      }
+    });
+
+    // Parameter r
+    let r_slider = document.getElementById("r-slider");
+    let r = 3.3;
+
+    // Parameters for the plot
+    let x_max = 1;
+    let x_size = 100;
+
+    // Parameters for cobwebbing
+    let do_cobweb = true;
+    let starting_point = 0.4;
+    let num_cobwebbing_steps = 50;
+    let interval_slider = document.getElementById("interval-slider")
+    let cobweb_interval_time = 200;
+
+    // Setting up x-axis
+    // equivalent to: x = linspace(0, x_max, x_size);
+    let x = [];
+    let x_label = [];
+    for (let i = 0; i < x_size; i++) {
+      x.push(i*x_max/x_size);
+    }
+
+    // Setting up x-labels
+    for (let i = 0; i < x_size; i++) {
+      x_label.push(i*x_max/x_size);
+    }
+    cobweb_chart.data.labels = x_label;
+
+    // Plotting y=x
+    let y_eq_x = {
+      label: 'y = x',
+      fill: false,
+      pointRadius: 0,
+      borderColor: "green",
+      data: x
+    };
+    cobweb_chart.data.datasets.push(y_eq_x);
+
+    // Plotting the graph for cobwebbing
+    let model_data = [];
+    for (let i = 0; i < x_size; i++) {
+      let par = x[i];
+      par = r*par*(1-par);
+      model_data.push(par);
+    }
+
+    let model = {
+      label: 'Discrete Logistic Model',
+      fill: false,
+      pointRadius: 0,
+      borderColor: "blue",
+      data: model_data
+    };
+    cobweb_chart.data.datasets.push(model);
+
+    cobweb_chart.update();
+
+    // Cobwebbing
+    if (do_cobweb) {
+      let cobweb_handle;
+      let cobweb = [];
+      cobweb.push(0);
+      cobweb.push(starting_point);
+      var step = 0;
+      cobweb_chart.update();
+
+      r_slider.oninput = function() {
+        clearTimeout(cobweb_handle);
+        r = this.value/1000;
+        cobweb_chart.data.datasets[1].data = [];
+        for (let i = 0; i < x_size; i++) {
+          let par = x[i];
+          par = r*par*(1-par);
+          cobweb_chart.data.datasets[1].data.push(par);
+        }
+        cobweb_chart.update();
+        cobweb = [];
+        cobweb.push(0);
+        cobweb.push(starting_point);
+        step = 0;
+        cobweb_chart.options.annotation.annotations = [];
+        cobweb_chart.update();
+        cobweb_handle = setTimeout(perform_cobweb, cobweb_interval_time*3);
+      };
+
+      interval_slider.oninput = function() {
+        clearTimeout(cobweb_handle);
+        interval_slider = this.value;
+        cobweb_handle = setTimeout(perform_cobweb, cobweb_interval_time*3);
+      };
+
+      let perform_cobweb = function() {
+        step++;
+        let par = cobweb[step];
+        par = r * par * (1 - par);
+        cobweb.push(par);
+
+        setTimeout(draw_vert_cobweb, cobweb_interval_time);
+        setTimeout(draw_horiz_cobweb, cobweb_interval_time*2);
+
+        if (step < num_cobwebbing_steps) {
+          cobweb_handle = setTimeout(perform_cobweb, cobweb_interval_time*3);
+        }
+      };
+
+      let draw_vert_cobweb = function() {
+        cobweb_chart.options.annotation.annotations.push({
+          type: 'box',
+          xScaleID: 'x-axis-0',
+          yScaleID: 'y-axis-0',
+          borderColor: 'pink',
+          borderWidth: 3.2,
+          xMin: x_label[Math.floor((cobweb[step - 2] || 0) * x_size / x_max)],
+          xMax: x_label[Math.floor((cobweb[step - 2] || 0) * x_size / x_max)],
+          yMin: cobweb[step - 2] || 0,
+          yMax: cobweb[step - 1] || 0
+        });
+
+        cobweb_chart.options.annotation.annotations.push({
+          type: 'box',
+          xScaleID: 'x-axis-0',
+          yScaleID: 'y-axis-0',
+          borderColor: 'red',
+          borderWidth: 3,
+          xMin: x_label[Math.floor(cobweb[step - 1] * x_size / x_max)],
+          xMax: x_label[Math.floor(cobweb[step - 1] * x_size / x_max)],
+          yMin: cobweb[step - 1] || 0,
+          yMax: cobweb[step]
+        });
+        cobweb_chart.update();
+      };
+
+      let draw_horiz_cobweb = function() {
+        cobweb_chart.options.annotation.annotations.push({
+          type: 'box',
+          xScaleID: 'x-axis-0',
+          yScaleID: 'y-axis-0',
+          borderColor: 'pink',
+          borderWidth: 3.2,
+          xMin: x_label[Math.floor((cobweb[step - 2] || 0) * x_size / x_max)],
+          xMax: x_label[Math.floor(cobweb[step - 1] * x_size / x_max)],
+          yMin: cobweb[step - 1] || 0,
+          yMax: cobweb[step - 1] || 0
+        });
+        cobweb_chart.options.annotation.annotations.push({
+          type: 'box',
+          xScaleID: 'x-axis-0',
+          yScaleID: 'y-axis-0',
+          borderColor: 'red',
+          borderWidth: 3,
+          xMin: x_label[Math.floor(cobweb[step - 1] * x_size / x_max)],
+          xMax: x_label[Math.floor(cobweb[step] * x_size / x_max)],
+          yMin: cobweb[step],
+          yMax: cobweb[step]
+        });
+        cobweb_chart.update();
+      };
+
+      cobweb_handle = setTimeout(perform_cobweb, cobweb_interval_time*3);
+    }
+
+</script>
+<style>
+  .slidecontainer {
+    width: 100%; /* Width of the outside container */
+  }
+
+  /* The slider itself */
+  .slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+  }
+
+  /* Mouse-over effects */
+  .slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+  }
+
+  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: black; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+
+  .slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: black; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+</style>
