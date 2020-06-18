@@ -1,0 +1,273 @@
+---
+layout: post
+current: post
+cover:  assets/images/cover-strogatz-2.png
+navigation: True
+title: Ver.2 Strogatz Model of Romeo and Juliet - Midterm version
+date: 2020-06-15 15:58:00
+tags: [projects]
+class: post-template
+subclass: 'post tag-projects'
+author: hailey
+page_priority: 3
+---
+<h2>Strogatz Model of Romeo and Juliet (Midterm Version)</h2>
+<hr>
+<canvas id="strogatz-canvas" width="50%" height="30%"></canvas>
+<br>
+
+<div class="slidecontainer" style="width:100%;float:left;text-align:left">
+  <p id="a_r-message">Modify <var>a<sub>r</sub></var></p>
+  <input type="range" min="0" max="4000" value="2000" class="slider" id="a_r-slider">
+
+  <p id="a_j-message">Modify <var>a_j</var></p>
+  <input type="range" min="0" max="4000" value="2000" class="slider" id="a_j-slider">
+
+  <p id="p_r-message">Modify <var>p_r</var></p>
+  <input type="range" min="0" max="4000" value="2000" class="slider" id="p_r-slider">
+
+  <p id="p_j-message">Modify <var>p_j</var></p>
+  <input type="range" min="0" max="4000" value="2000" class="slider" id="p_j-slider">
+
+  <button id="convert-log-scale" type="button">Draw in Log scale</button>
+</div>
+
+<hr>
+<ul>
+  <li>The graph is plotted via Chart.js.</li>
+  <li>Explanations for this will be updated later when I'm not busy.</li>
+  <li>Details: <a href="http://ai.stanford.edu/~rajatr/articles/SS_love_dEq.pdf">http://ai.stanford.edu/~rajatr/articles/SS_love_dEq.pdf</a></li>
+</ul>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.min.js"></script>
+<script>
+  let strogatz_canvas = document.getElementById("strogatz-canvas");
+  let strogatz_ctx = strogatz_canvas.getContext("2d");
+  let strogatz_chart = new Chart(strogatz_ctx, {
+    type: 'line',
+    animation: false,
+    data: {
+      datasets: [],
+    },
+    options: {
+      annotation: {
+        drawTime: 'afterDatasetsDraw',
+        annotations: []
+      }
+    }
+  });
+
+  // Constants (Parameters)
+  let a_r = -0.675;
+  let a_j = 1;
+  let p_r = -0.071;
+  let p_j = 1.3;
+
+  // Romeo and Juliet in (t = 0)
+  let r_0 = 1;
+  let j_0 = 1;
+
+  // Parameters for plotting
+  let t_start = 0;
+  let t_max = 100;
+  let plot_handle;
+  let update_interval = 0;
+  let log_scale = false;
+
+  // Setting up t-axis for time
+  let t = [];
+  let t_label = [];
+  for (let i = t_start; i <= t_max; i++) {
+    t.push(i);
+    t_label.push(i);
+  }
+  strogatz_chart.data.labels = t_label;
+
+  // Settings for Romeo
+  let romeo_data = [];
+  let romeo = {
+    label: 'Romeo',
+    fill: false,
+    pointRadius: 0,
+    borderColor: "red",
+    data: romeo_data
+  };
+  strogatz_chart.data.datasets.push(romeo);
+
+  // Settings for Juliet
+  let juliet_data = [];
+  let juliet = {
+    label: 'Juliet',
+    fill: false,
+    pointRadius: 0,
+    borderColor: "blue",
+    data: juliet_data
+  };
+  strogatz_chart.data.datasets.push(juliet);
+
+  // Plot Love;
+  let plot_Love = function() {
+    clearTimeout(plot_handle);
+
+    strogatz_chart.data.datasets[0].data = []; // Romeo
+    strogatz_chart.data.datasets[1].data = []; // Juliet
+
+    if (log_scale) {
+      strogatz_chart.data.datasets[0].data.push(Math.log10(r_0));
+      strogatz_chart.data.datasets[1].data.push(Math.log10(j_0));
+    }
+    else {
+      strogatz_chart.data.datasets[0].data.push(r_0);
+      strogatz_chart.data.datasets[1].data.push(j_0);
+    }
+
+    let r_prev = r_0;
+    let j_prev = j_0;
+
+    let i = t_start;
+    let run_process = function() {
+      // Calculate current
+      let r_current = a_r * r_prev + p_r * j_prev * j_prev;
+      let j_current = a_j * j_prev + p_j * r_prev;
+
+      // Push calculated data
+      if (log_scale) {
+        if (r_current > 0) {
+          strogatz_chart.data.datasets[0].data.push(Math.log10(r_current));
+        }
+        else if (r_current < 0) {
+          strogatz_chart.data.datasets[0].data.push(-Math.log10(Math.abs(r_current)));
+        }
+        if (j_current > 0) {
+          strogatz_chart.data.datasets[1].data.push(Math.log10(j_current));
+        }
+        else if (j_current < 0) {
+          strogatz_chart.data.datasets[1].data.push(-Math.log10(Math.abs(j_current)));
+        }
+      }
+      else {
+        strogatz_chart.data.datasets[0].data.push(r_current);
+        strogatz_chart.data.datasets[1].data.push(j_current);
+      }
+
+      // Update prev
+      r_prev = r_current;
+      j_prev = j_current;
+
+      strogatz_chart.update(); // Uncomment for updating each steps
+
+      i++;
+      if (i > t_max) {
+        strogatz_chart.update();
+        return;
+      }
+      plot_handle = setTimeout(run_process, update_interval);
+    };
+    run_process();
+
+
+    strogatz_chart.update(); // Uncomment (with above) for updating each steps
+  };
+
+  // Sliders
+  let a_r_slider = document.getElementById("a_r-slider");
+  a_r_slider.value = a_r*1000 + 2000;
+  let a_j_slider = document.getElementById("a_j-slider");
+  a_j_slider.value = a_j*1000 + 2000;
+  let p_r_slider = document.getElementById("p_r-slider");
+  p_r_slider.value = p_r*1000 + 2000;
+  let p_j_slider = document.getElementById("p_j-slider");
+  p_j_slider.value = p_j*1000 + 2000;
+  let a_r_message = document.getElementById("a_r-message");
+  a_r_message.innerHTML = "Modify <var>a<sub>r</sub></var> =  " + a_r;
+  let a_j_message = document.getElementById("a_j-message");
+  a_j_message.innerHTML = "Modify <var>a<sub>j</sub></var> =  " + a_j;
+  let p_r_message = document.getElementById("p_r-message");
+  p_r_message.innerHTML = "Modify <var>p<sub>r</sub></var> =  " + p_r;
+  let p_j_message = document.getElementById("p_j-message");
+  p_j_message.innerHTML = "Modify <var>p<sub>j</sub></var> =  " + p_j;
+  let convert_scale_botton = document.getElementById("convert-log-scale");
+
+  // Slider callbacks
+  a_r_slider.oninput = function(){
+    a_r = (this.value - 2000)/1000;
+    a_r_message.innerHTML = "Modify <var>a<sub>r</sub></var> =  " + a_r;
+    plot_Love();
+  };
+  a_j_slider.oninput = function(){
+    a_j = (this.value - 2000)/1000;
+    a_j_message.innerHTML = "Modify <var>a<sub>j</sub></var> =  " + a_j;
+    plot_Love();
+  };
+  p_r_slider.oninput = function(){
+    p_r = (this.value - 2000)/1000;
+    p_r_message.innerHTML = "Modify <var>p<sub>r</sub></var> =  " + p_r;
+    plot_Love();
+  };
+  p_j_slider.oninput = function(){
+    p_j = (this.value - 2000)/1000;
+    p_j_message.innerHTML = "Modify <var>p<sub>j</sub></var> =  " + p_j;
+    plot_Love();
+  };
+
+  // Button callbacks
+  convert_scale_botton.onclick = function() {
+    if (log_scale) {
+      convert_scale_botton.innerHTML = "Draw in Log scale";
+    }
+    else {
+      convert_scale_botton.innerHTML = "Draw without Log scale";
+    }
+    log_scale = !log_scale;
+
+    plot_Love();
+  };
+
+  // Initial graph plotted here
+  strogatz_chart.update();
+  plot_Love();
+
+
+</script>
+<style>
+  .slidecontainer {
+    width: 100%; /* Width of the outside container */
+  }
+
+  /* The slider itself */
+  .slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+  }
+
+  /* Mouse-over effects */
+  .slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+  }
+
+  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: black; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+
+  .slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: black; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+</style>
+
